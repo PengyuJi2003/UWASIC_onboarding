@@ -1,6 +1,6 @@
 `define IDLE 2'b00
 `define TRANSACTION 2'b01
-`define VALIDATION 2'b01
+`define VALIDATION 2'b10
 `define UPDATE 2'b11
 
 module spi_peripheral (
