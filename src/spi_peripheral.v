@@ -29,7 +29,7 @@ assign reg_3 = out_reg_3;
 assign reg_4 = out_reg_4;
 
 //temp registers
-reg [2:0] state;
+reg [1:0] state;
 reg [3:0] sclk_edge_counter;
 reg [15:0] serial_data;
 
@@ -60,7 +60,7 @@ always @(posedge sclk or negedge rst_n) begin
                 end
             end
             `VALIDATION: begin
-                if(({0,serial_data[7:1]} >= 8'b0) && ({0,serial_data[7:1]} <= 8'd4)) begin
+                if(({1'b0,serial_data[7:1]} >= 8'b0) && ({1'b0,serial_data[7:1]} <= 8'd4)) begin
                     state <= `UPDATE;
                 end
                 else begin
@@ -98,35 +98,35 @@ always @(*) begin
             out_reg_4 = 8'b0;
         end
         `UPDATE: begin
-            if({0,serial_data[7:1]} == 8'b0) begin
+            if({1'b0,serial_data[7:1]} == 8'b0) begin
                 out_reg_0 = serial_data[15:8];
                 out_reg_1 = 8'b0;
                 out_reg_2 = 8'b0;
                 out_reg_3 = 8'b0;
                 out_reg_4 = 8'b0;
             end
-            else if({0,serial_data[7:1]} == 8'd1) begin
+            else if({1'b0,serial_data[7:1]} == 8'd1) begin
                 out_reg_0 = 8'b0;
                 out_reg_1 = serial_data[15:8];
                 out_reg_2 = 8'b0;
                 out_reg_3 = 8'b0;
                 out_reg_4 = 8'b0;
             end
-            else if({0,serial_data[7:1]} == 8'd2) begin
+            else if({1'b0,serial_data[7:1]} == 8'd2) begin
                 out_reg_0 = 8'b0;
                 out_reg_1 = 8'b0;
                 out_reg_2 = serial_data[15:8];
                 out_reg_3 = 8'b0;
                 out_reg_4 = 8'b0;
             end
-            else if({0,serial_data[7:1]} == 8'd3) begin
+            else if({1'b0,serial_data[7:1]} == 8'd3) begin
                 out_reg_0 = 8'b0;
                 out_reg_1 = 8'b0;
                 out_reg_2 = 8'b0;
                 out_reg_3 = serial_data[15:8];
                 out_reg_4 = 8'b0;
             end
-            else if({0,serial_data[7:1]} == 8'd4) begin
+            else if({1'b0,serial_data[7:1]} == 8'd4) begin
                 out_reg_0 = 8'b0;
                 out_reg_1 = 8'b0;
                 out_reg_2 = 8'b0;
