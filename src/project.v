@@ -22,6 +22,13 @@ module tt_um_uwasic_onboarding_Joe_Ji (
   //assign uio_oe  = 0;
   assign uio_oe = 8'hFF; // Set all IOs to output
 
+  // Create wires to refer to the values of the registers
+  wire [7:0] en_reg_out_7_0;
+  wire [7:0] en_reg_out_15_8;
+  wire [7:0] en_reg_pwm_7_0;
+  wire [7:0] en_reg_pwm_15_8;
+  wire [7:0] pwm_duty_cycle;
+
   // Instantiate the PWM module
   pwm_peripheral pwm_peripheral_inst (
     .clk(clk),
