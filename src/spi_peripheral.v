@@ -133,6 +133,13 @@ always @(*) begin
                 out_reg_3 = 8'b0;
                 out_reg_4 = serial_data[15:8];
             end
+            else begin
+                out_reg_0 = 8'b0;
+                out_reg_1 = 8'b0;
+                out_reg_2 = 8'b0;
+                out_reg_3 = 8'b0;
+                out_reg_4 = 8'b0;
+            end
         end
     endcase
 end
