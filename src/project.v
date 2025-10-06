@@ -29,6 +29,19 @@ module tt_um_uwasic_onboarding_Joe_Ji (
   wire [7:0] en_reg_pwm_15_8;
   wire [7:0] pwm_duty_cycle;
 
+  // Instantiate the SPI Peripheral Module
+  spi_peripheral spi_peripheral_inst (
+    .cs_n(ui_in[2]),
+    .rst_n(rst_n),
+    .sclk(ui_in[0]),
+    .copi(ui_in[1]),
+    .reg_0(en_reg_out_7_0),
+    .reg_1(en_reg_out_15_8),
+    .reg_2(en_reg_pwm_7_0),
+    .reg_3(en_reg_pwm_15_8),
+    .reg_4(pwm_duty_cycle)
+  );
+
   // Instantiate the PWM module
   pwm_peripheral pwm_peripheral_inst (
     .clk(clk),
