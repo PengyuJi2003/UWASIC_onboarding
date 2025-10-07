@@ -60,59 +60,67 @@ always @(posedge sclk or negedge rst_n) begin
         out_reg_4 <= 8'b0;
     end else begin
         // Update the regs on the rising edge of cs_n
-        if (cs_n) begin
-            if(serial_data[14:8] == 7'b0) begin
-                out_reg_0 <= serial_data[7:0];
-                out_reg_1 <= 8'b0;
-                out_reg_2 <= 8'b0;
-                out_reg_3 <= 8'b0;
-                out_reg_4 <= 8'b0;
-            end
-            else if(serial_data[14:8] == 7'd1) begin
-                out_reg_0 <= 8'b0;
-                out_reg_1 <= serial_data[7:0];
-                out_reg_2 <= 8'b0;
-                out_reg_3 <= 8'b0;
-                out_reg_4 <= 8'b0;
-            end
-            else if(serial_data[14:8] == 7'd2) begin
-                out_reg_0 <= 8'b0;
-                out_reg_1 <= 8'b0;
-                out_reg_2 <= serial_data[7:0];
-                out_reg_3 <= 8'b0;
-                out_reg_4 <= 8'b0;
-            end
-            else if(serial_data[14:8] == 7'd3) begin
-                out_reg_0 <= 8'b0;
-                out_reg_1 <= 8'b0;
-                out_reg_2 <= 8'b0;
-                out_reg_3 <= serial_data[7:0];
-                out_reg_4 <= 8'b0;
-            end
-            else if(serial_data[14:8] == 7'd4) begin
-                out_reg_0 <= 8'b0;
-                out_reg_1 <= 8'b0;
-                out_reg_2 <= 8'b0;
-                out_reg_3 <= 8'b0;
-                out_reg_4 <= serial_data[7:0];
-            end
-            else begin
-                out_reg_0 <= 8'b0;
-                out_reg_1 <= 8'b0;
-                out_reg_2 <= 8'b0;
-                out_reg_3 <= 8'b0;
-                out_reg_4 <= 8'b0;
-            end
+        
+        sclk_edge_counter <= sclk_edge_counter + 1'b1;
+        serial_data[15-sclk_edge_counter] <= q_f2;
+
+        if(sclk_edge_counter == 15) begin
+            sclk_edge_counter <= 0;
+        end
+
+    end
+end
+
+always @(*) begin
+    if (cs_n) begin
+        if(serial_data[14:8] == 7'b0) begin
+            out_reg_0 <= serial_data[7:0];
+            out_reg_1 <= 8'b0;
+            out_reg_2 <= 8'b0;
+            out_reg_3 <= 8'b0;
+            out_reg_4 <= 8'b0;
+        end
+        else if(serial_data[14:8] == 7'd1) begin
+            out_reg_0 <= 8'b0;
+            out_reg_1 <= serial_data[7:0];
+            out_reg_2 <= 8'b0;
+            out_reg_3 <= 8'b0;
+            out_reg_4 <= 8'b0;
+        end
+        else if(serial_data[14:8] == 7'd2) begin
+            out_reg_0 <= 8'b0;
+            out_reg_1 <= 8'b0;
+            out_reg_2 <= serial_data[7:0];
+            out_reg_3 <= 8'b0;
+            out_reg_4 <= 8'b0;
+        end
+        else if(serial_data[14:8] == 7'd3) begin
+            out_reg_0 <= 8'b0;
+            out_reg_1 <= 8'b0;
+            out_reg_2 <= 8'b0;
+            out_reg_3 <= serial_data[7:0];
+            out_reg_4 <= 8'b0;
+        end
+        else if(serial_data[14:8] == 7'd4) begin
+            out_reg_0 <= 8'b0;
+            out_reg_1 <= 8'b0;
+            out_reg_2 <= 8'b0;
+            out_reg_3 <= 8'b0;
+            out_reg_4 <= serial_data[7:0];
         end
         else begin
-            sclk_edge_counter <= sclk_edge_counter + 1'b1;
-            serial_data[15-sclk_edge_counter] <= q_f2;
-
-            if(sclk_edge_counter == 15) begin
-                sclk_edge_counter <= 0;
-            end
+            out_reg_0 <= 8'b0;
+            out_reg_1 <= 8'b0;
+            out_reg_2 <= 8'b0;
+            out_reg_3 <= 8'b0;
+            out_reg_4 <= 8'b0;
         end
-
+    end else begin
+        out_reg_0 <= 8'b0;
+        out_reg_1 <= 8'b0;
+        out_reg_2 <= 8'b0;
+        out_reg_3 <= 8'b0;
+        out_reg_4 <= 8'b0;
     end
 end
 
