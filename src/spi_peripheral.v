@@ -52,7 +52,10 @@ always @(posedge sclk or negedge rst_n) begin
     if(!rst_n) begin
         sclk_edge_counter <= 4'b0;
         serial_data <= 16'b0;
-        state <= `IDLE;
+        if(!cs_n)
+            state <= `TRANSACTION;
+        else
+            state <= `IDLE;
     end else begin
         case(state)
             `IDLE: begin
