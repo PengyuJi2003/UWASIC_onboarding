@@ -52,10 +52,7 @@ always @(posedge sclk or negedge rst_n) begin
     if(!rst_n) begin
         sclk_edge_counter <= 4'b0;
         serial_data <= 16'b0;
-        if(!cs_n)
-            state <= `TRANSACTION;
-        else
-            state <= `IDLE;
+        state <= `TRANSACTION;
     end else begin
         case(state)
             `IDLE: begin
@@ -65,17 +62,21 @@ always @(posedge sclk or negedge rst_n) begin
                     state <= `IDLE;
             end
             `TRANSACTION: begin
-                //shift 1 bit to the right and concatenate the input
-                // serial_data <= {serial_data[15:1], q_f2};
-                sclk_edge_counter <= sclk_edge_counter + 1'b1;
-                serial_data[sclk_edge_counter] <= q_f2;
-
-                if(sclk_edge_counter == 15) begin
-                    sclk_edge_counter <= 0;
-                    state <= `VALIDATION;
-                end
+                if (cs_n)
+                    state <= `IDLE;
                 else begin
-                    state <= `TRANSACTION;
+                    //shift 1 bit to the right and concatenate the input
+                    // serial_data <= {serial_data[15:1], q_f2};
+                    sclk_edge_counter <= sclk_edge_counter + 1'b1;
+                    serial_data[sclk_edge_counter] <= q_f2;
+
+                    if(sclk_edge_counter == 15) begin
+                        sclk_edge_counter <= 0;
+                        state <= `VALIDATION;
+                    end
+                    else begin
+                        state <= `TRANSACTION;
+                    end
                 end
             end
             `VALIDATION: begin
