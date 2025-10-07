@@ -33,6 +33,7 @@ module tt_um_uwasic_onboarding_Joe_Ji (
   spi_peripheral spi_peripheral_inst (
     .cs_n(ui_in[2]),
     .rst_n(rst_n),
+    .clk(clk),
     .sclk(ui_in[0]),
     .copi(ui_in[1]),
     .reg_0(en_reg_out_7_0),
