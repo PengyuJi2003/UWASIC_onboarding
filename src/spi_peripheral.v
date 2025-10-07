@@ -52,12 +52,6 @@ always @(posedge sclk or negedge rst_n) begin
     if(!rst_n) begin
         sclk_edge_counter <= 4'b0;
         serial_data <= 16'b0;
-        //reset all the reg values to 0
-        out_reg_0 <= 8'b0;
-        out_reg_1 <= 8'b0;
-        out_reg_2 <= 8'b0;
-        out_reg_3 <= 8'b0;
-        out_reg_4 <= 8'b0;
     end else begin
         // Update the regs on the rising edge of cs_n
         
