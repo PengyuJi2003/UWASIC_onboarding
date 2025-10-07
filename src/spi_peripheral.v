@@ -121,16 +121,20 @@ always @(*) begin
         end
     end
     else begin
-        if(serial_data[14:8] == 7'b0)
-            read_output = out_reg_0;
-        else if(serial_data[14:8] == 7'd1)
-            read_output = out_reg_1;
-        else if(serial_data[14:8] == 7'd2)
-            read_output = out_reg_2;
-        else if(serial_data[14:8] == 7'd3)
-            read_output = out_reg_3;
-        else if(serial_data[14:8] == 7'd4)
-            read_output = out_reg_4;
+        if (cs_n) begin
+            if(serial_data[14:8] == 7'b0)
+                read_output = out_reg_0;
+            else if(serial_data[14:8] == 7'd1)
+                read_output = out_reg_1;
+            else if(serial_data[14:8] == 7'd2)
+                read_output = out_reg_2;
+            else if(serial_data[14:8] == 7'd3)
+                read_output = out_reg_3;
+            else if(serial_data[14:8] == 7'd4)
+                read_output = out_reg_4;
+            else
+                read_output = 8'b0;
+        end
         else
             read_output = 8'b0;
     end
