@@ -25,7 +25,7 @@ reg [7:0] out_reg_2;
 reg [7:0] out_reg_3;
 reg [7:0] out_reg_4;
 
-assign cipo = read_output;
+//assign cipo = read_output;
 assign reg_0 = out_reg_0;
 assign reg_1 = out_reg_1;
 assign reg_2 = out_reg_2;
