@@ -66,52 +66,42 @@ always @(posedge sclk or negedge rst_n) begin
 end
 
 always @(*) begin
-    if (serial_data[15]) begin  //write
-        if (cs_n) begin
-            // Update the regs on the rising edge of cs_n
-            if(serial_data[14:8] == 7'b0) begin
-                out_reg_0 = serial_data[7:0];
-                out_reg_1 = 8'b0;
-                out_reg_2 = 8'b0;
-                out_reg_3 = 8'b0;
-                out_reg_4 = 8'b0;
-            end
-            else if(serial_data[14:8] == 7'd1) begin
-                out_reg_0 = 8'b0;
-                out_reg_1 = serial_data[7:0];
-                out_reg_2 = 8'b0;
-                out_reg_3 = 8'b0;
-                out_reg_4 = 8'b0;
-            end
-            else if(serial_data[14:8] == 7'd2) begin
-                out_reg_0 = 8'b0;
-                out_reg_1 = 8'b0;
-                out_reg_2 = serial_data[7:0];
-                out_reg_3 = 8'b0;
-                out_reg_4 = 8'b0;
-            end
-            else if(serial_data[14:8] == 7'd3) begin
-                out_reg_0 = 8'b0;
-                out_reg_1 = 8'b0;
-                out_reg_2 = 8'b0;
-                out_reg_3 = serial_data[7:0];
-                out_reg_4 = 8'b0;
-            end
-            else if(serial_data[14:8] == 7'd4) begin
-                out_reg_0 = 8'b0;
-                out_reg_1 = 8'b0;
-                out_reg_2 = 8'b0;
-                out_reg_3 = 8'b0;
-                out_reg_4 = serial_data[7:0];
-            end
-            else begin
-                out_reg_0 = 8'b0;
-                out_reg_1 = 8'b0;
-                out_reg_2 = 8'b0;
-                out_reg_3 = 8'b0;
-                out_reg_4 = 8'b0;
-            end
-        end 
+    if (cs_n) begin
+        if(serial_data[14:8] == 7'b0) begin
+            out_reg_0 = serial_data[7:0];
+            out_reg_1 = 8'b0;
+            out_reg_2 = 8'b0;
+            out_reg_3 = 8'b0;
+            out_reg_4 = 8'b0;
+        end
+        else if(serial_data[14:8] == 7'd1) begin
+            out_reg_0 = 8'b0;
+            out_reg_1 = serial_data[7:0];
+            out_reg_2 = 8'b0;
+            out_reg_3 = 8'b0;
+            out_reg_4 = 8'b0;
+        end
+        else if(serial_data[14:8] == 7'd2) begin
+            out_reg_0 = 8'b0;
+            out_reg_1 = 8'b0;
+            out_reg_2 = serial_data[7:0];
+            out_reg_3 = 8'b0;
+            out_reg_4 = 8'b0;
+        end
+        else if(serial_data[14:8] == 7'd3) begin
+            out_reg_0 = 8'b0;
+            out_reg_1 = 8'b0;
+            out_reg_2 = 8'b0;
+            out_reg_3 = serial_data[7:0];
+            out_reg_4 = 8'b0;
+        end
+        else if(serial_data[14:8] == 7'd4) begin
+            out_reg_0 = 8'b0;
+            out_reg_1 = 8'b0;
+            out_reg_2 = 8'b0;
+            out_reg_3 = 8'b0;
+            out_reg_4 = serial_data[7:0];
+        end
         else begin
             out_reg_0 = 8'b0;
             out_reg_1 = 8'b0;
@@ -119,26 +109,13 @@ always @(*) begin
             out_reg_3 = 8'b0;
             out_reg_4 = 8'b0;
         end
+    end else begin
+        out_reg_0 = 8'b0;
+        out_reg_1 = 8'b0;
+        out_reg_2 = 8'b0;
+        out_reg_3 = 8'b0;
+        out_reg_4 = 8'b0;
     end
-    else begin
-        if (cs_n) begin
-            if(serial_data[14:8] == 7'b0)
-                read_output = out_reg_0;
-            else if(serial_data[14:8] == 7'd1)
-                read_output = out_reg_1;
-            else if(serial_data[14:8] == 7'd2)
-                read_output = out_reg_2;
-            else if(serial_data[14:8] == 7'd3)
-                read_output = out_reg_3;
-            else if(serial_data[14:8] == 7'd4)
-                read_output = out_reg_4;
-            else
-                read_output = 8'b0;
-        end
-        else
-            read_output = 8'b0;
-    end
-    
 end
 
 // always @(*) begin
