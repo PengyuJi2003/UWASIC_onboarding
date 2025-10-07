@@ -9,7 +9,7 @@ module spi_peripheral (
     input  wire clk,            // faster clock from the top level
     input  wire sclk,           // Clock signal from the controller
     input  wire copi,           // Controller out peripheral in (for write)
-    output wire [7:0] cipo,     // Controller in peripheral out (for read)
+    //output wire [7:0] cipo,     // Controller in peripheral out (for read)
     output wire [7:0] reg_0,    // register with address 0x00
     output wire [7:0] reg_1,    // register with address 0x01
     output wire [7:0] reg_2,    // register with address 0x02
@@ -18,7 +18,7 @@ module spi_peripheral (
 );
 
 //output regs & assignments
-reg [7:0] read_output;
+//reg [7:0] read_output;
 reg [7:0] out_reg_0;
 reg [7:0] out_reg_1;
 reg [7:0] out_reg_2;
@@ -117,75 +117,5 @@ always @(*) begin
         out_reg_4 = 8'b0;
     end
 end
-
-// always @(*) begin
-//     case(state)
-//         `IDLE: begin
-//             out_reg_0 = 8'b0;
-//             out_reg_1 = 8'b0;
-//             out_reg_2 = 8'b0;
-//             out_reg_3 = 8'b0;
-//             out_reg_4 = 8'b0;
-//         end
-//         `TRANSACTION: begin
-//             out_reg_0 = 8'b0;
-//             out_reg_1 = 8'b0;
-//             out_reg_2 = 8'b0;
-//             out_reg_3 = 8'b0;
-//             out_reg_4 = 8'b0;
-//         end
-//         // `VALIDATION: begin
-//         //     out_reg_0 = 8'b0;
-//         //     out_reg_1 = 8'b0;
-//         //     out_reg_2 = 8'b0;
-//         //     out_reg_3 = 8'b0;
-//         //     out_reg_4 = 8'b0;
-//         // end
-//         `UPDATE: begin
-//             if(serial_data[14:8] == 7'b0) begin
-//                 out_reg_0 = serial_data[7:0];
-//                 out_reg_1 = 8'b0;
-//                 out_reg_2 = 8'b0;
-//                 out_reg_3 = 8'b0;
-//                 out_reg_4 = 8'b0;
-//             end
-//             else if(serial_data[14:8] == 7'd1) begin
-//                 out_reg_0 = 8'b0;
-//                 out_reg_1 = serial_data[7:0];
-//                 out_reg_2 = 8'b0;
-//                 out_reg_3 = 8'b0;
-//                 out_reg_4 = 8'b0;
-//             end
-//             else if(serial_data[14:8] == 7'd2) begin
-//                 out_reg_0 = 8'b0;
-//                 out_reg_1 = 8'b0;
-//                 out_reg_2 = serial_data[7:0];
-//                 out_reg_3 = 8'b0;
-//                 out_reg_4 = 8'b0;
-//             end
-//             else if(serial_data[14:8] == 7'd3) begin
-//                 out_reg_0 = 8'b0;
-//                 out_reg_1 = 8'b0;
-//                 out_reg_2 = 8'b0;
-//                 out_reg_3 = serial_data[7:0];
-//                 out_reg_4 = 8'b0;
-//             end
-//             else if(serial_data[14:8] == 7'd4) begin
-//                 out_reg_0 = 8'b0;
-//                 out_reg_1 = 8'b0;
-//                 out_reg_2 = 8'b0;
-//                 out_reg_3 = 8'b0;
-//                 out_reg_4 = serial_data[7:0];
-//             end
-//             else begin
-//                 out_reg_0 = 8'b0;
-//                 out_reg_1 = 8'b0;
-//                 out_reg_2 = 8'b0;
-//                 out_reg_3 = 8'b0;
-//                 out_reg_4 = 8'b0;
-//             end
-//         end
-//     endcase
-// end
 
 endmodule
