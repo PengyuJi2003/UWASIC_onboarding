@@ -6,6 +6,7 @@
 module spi_peripheral (
     input  wire cs_n,           // Active-low chip select signal
     input  wire rst_n,          // Active-low reset signal
+    input  wire clk,            // faster clock from the top level
     input  wire sclk,           // Clock signal from the controller
     input  wire copi,           // Controller out peripheral in
     output wire [7:0] reg_0,    // register with address 0x00
@@ -33,6 +34,20 @@ reg [1:0] state;
 reg [3:0] sclk_edge_counter;
 reg [15:0] serial_data;
 
+//Two-FFs synchronizer
+reg q_f1;
+reg q_f2;
+
+always @(posedge clk or negedge rst_n) begin
+    if(!rst_n) begin
+        q_f1 <= 1'b0;
+        q_f2 <= 1'b0;
+    end else begin
+        q_f1 <= copi;
+        q_f2 <= q_f1;
+    end
+end
+
 always @(posedge sclk or negedge rst_n) begin
     if(!rst_n) begin
         sclk_edge_counter <= 0;
@@ -48,7 +63,7 @@ always @(posedge sclk or negedge rst_n) begin
             end
             `TRANSACTION: begin
                 //shift 1 bit to the right and concatenate the input
-                serial_data <= {copi, serial_data[14:0]};
+                serial_data <= {q_f2, serial_data[14:0]};
                 sclk_edge_counter <= sclk_edge_counter + 1;
 
                 if(sclk_edge_counter == 15) begin
