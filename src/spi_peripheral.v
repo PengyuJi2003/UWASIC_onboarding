@@ -72,7 +72,7 @@ always @(posedge sclk or negedge rst_n) begin
 
                     if(sclk_edge_counter == 15) begin
                         sclk_edge_counter <= 0;
-                        if((serial_data[7:1] >= 7'b0) && (serial_data[7:1] <= 7'd4)) begin
+                        if((serial_data[14:8] >= 7'b0) && (serial_data[14:8] <= 7'd4)) begin
                             state <= `UPDATE;   // address valid
                         end else begin
                             state <= `TRANSACTION;
@@ -122,40 +122,40 @@ always @(*) begin
         //     out_reg_4 = 8'b0;
         // end
         `UPDATE: begin
-            if(serial_data[7:1] == 7'b0) begin
-                out_reg_0 = serial_data[15:8];
+            if(serial_data[14:8] == 7'b0) begin
+                out_reg_0 = serial_data[7:0];
                 out_reg_1 = 8'b0;
                 out_reg_2 = 8'b0;
                 out_reg_3 = 8'b0;
                 out_reg_4 = 8'b0;
             end
-            else if(serial_data[7:1] == 7'd1) begin
+            else if(serial_data[14:8] == 7'd1) begin
                 out_reg_0 = 8'b0;
-                out_reg_1 = serial_data[15:8];
+                out_reg_1 = serial_data[7:0];
                 out_reg_2 = 8'b0;
                 out_reg_3 = 8'b0;
                 out_reg_4 = 8'b0;
             end
-            else if(serial_data[7:1] == 7'd2) begin
+            else if(serial_data[14:8] == 7'd2) begin
                 out_reg_0 = 8'b0;
                 out_reg_1 = 8'b0;
-                out_reg_2 = serial_data[15:8];
+                out_reg_2 = serial_data[7:0];
                 out_reg_3 = 8'b0;
                 out_reg_4 = 8'b0;
             end
-            else if(serial_data[7:1] == 7'd3) begin
+            else if(serial_data[14:8] == 7'd3) begin
                 out_reg_0 = 8'b0;
                 out_reg_1 = 8'b0;
                 out_reg_2 = 8'b0;
-                out_reg_3 = serial_data[15:8];
+                out_reg_3 = serial_data[7:0];
                 out_reg_4 = 8'b0;
             end
-            else if(serial_data[7:1] == 7'd4) begin
+            else if(serial_data[14:8] == 7'd4) begin
                 out_reg_0 = 8'b0;
                 out_reg_1 = 8'b0;
                 out_reg_2 = 8'b0;
                 out_reg_3 = 8'b0;
-                out_reg_4 = serial_data[15:8];
+                out_reg_4 = serial_data[7:0];
             end
             else begin
                 out_reg_0 = 8'b0;
