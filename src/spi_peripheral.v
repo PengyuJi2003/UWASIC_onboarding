@@ -63,7 +63,7 @@ always @(posedge sclk or negedge rst_n) begin
             end
             `TRANSACTION: begin
                 //shift 1 bit to the right and concatenate the input
-                serial_data <= {q_f2, serial_data[14:0]};
+                serial_data <= {q_f2, serial_data[15:1]};
                 sclk_edge_counter <= sclk_edge_counter + 1;
 
                 if(sclk_edge_counter == 15) begin
