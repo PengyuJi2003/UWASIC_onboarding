@@ -68,7 +68,7 @@ always @(posedge sclk or negedge rst_n) begin
                 //shift 1 bit to the right and concatenate the input
                 // serial_data <= {serial_data[15:1], q_f2};
                 sclk_edge_counter <= sclk_edge_counter + 1'b1;
-                serial_data[15-sclk_edge_counter] <= q_f2;
+                serial_data[sclk_edge_counter] <= q_f2;
 
                 if(sclk_edge_counter == 15) begin
                     sclk_edge_counter <= 0;
