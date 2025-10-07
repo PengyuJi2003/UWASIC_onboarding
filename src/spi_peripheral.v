@@ -1,7 +1,7 @@
-`define IDLE 2'b00
-`define TRANSACTION 2'b01
-//`define VALIDATION 2'b10
-`define UPDATE 2'b10
+// `define IDLE 2'b00
+// `define TRANSACTION 2'b01
+// `define VALIDATION 2'b10
+// `define UPDATE 2'b10
 
 module spi_peripheral (
     input  wire cs_n,           // Active-low chip select signal
@@ -52,120 +52,138 @@ always @(posedge sclk or negedge rst_n) begin
     if(!rst_n) begin
         sclk_edge_counter <= 4'b0;
         serial_data <= 16'b0;
-        state <= `TRANSACTION;
+        //reset all the reg values to 0
+        out_reg_0 <= 8'b0;
+        out_reg_1 <= 8'b0;
+        out_reg_2 <= 8'b0;
+        out_reg_3 <= 8'b0;
+        out_reg_4 <= 8'b0;
     end else begin
-        case(state)
-            `IDLE: begin
-                if(!cs_n)
-                    state <= `TRANSACTION;
-                else
-                    state <= `IDLE;
+        // Update the regs on the rising edge of cs_n
+        if (cs_n) begin
+            if(serial_data[14:8] == 7'b0) begin
+                out_reg_0 <= serial_data[7:0];
+                out_reg_1 <= 8'b0;
+                out_reg_2 <= 8'b0;
+                out_reg_3 <= 8'b0;
+                out_reg_4 <= 8'b0;
             end
-            `TRANSACTION: begin
-                if (cs_n)
-                    state <= `IDLE;
-                else begin
-                    // shift 1 bit to the right and concatenate the input
-                    // serial_data <= {serial_data[15:1], q_f2};
-                    sclk_edge_counter <= sclk_edge_counter + 1'b1;
-                    serial_data[15-sclk_edge_counter] <= q_f2;
+            else if(serial_data[14:8] == 7'd1) begin
+                out_reg_0 <= 8'b0;
+                out_reg_1 <= serial_data[7:0];
+                out_reg_2 <= 8'b0;
+                out_reg_3 <= 8'b0;
+                out_reg_4 <= 8'b0;
+            end
+            else if(serial_data[14:8] == 7'd2) begin
+                out_reg_0 <= 8'b0;
+                out_reg_1 <= 8'b0;
+                out_reg_2 <= serial_data[7:0];
+                out_reg_3 <= 8'b0;
+                out_reg_4 <= 8'b0;
+            end
+            else if(serial_data[14:8] == 7'd3) begin
+                out_reg_0 <= 8'b0;
+                out_reg_1 <= 8'b0;
+                out_reg_2 <= 8'b0;
+                out_reg_3 <= serial_data[7:0];
+                out_reg_4 <= 8'b0;
+            end
+            else if(serial_data[14:8] == 7'd4) begin
+                out_reg_0 <= 8'b0;
+                out_reg_1 <= 8'b0;
+                out_reg_2 <= 8'b0;
+                out_reg_3 <= 8'b0;
+                out_reg_4 <= serial_data[7:0];
+            end
+            else begin
+                out_reg_0 <= 8'b0;
+                out_reg_1 <= 8'b0;
+                out_reg_2 <= 8'b0;
+                out_reg_3 <= 8'b0;
+                out_reg_4 <= 8'b0;
+            end
+        end
+        else begin
+            sclk_edge_counter <= sclk_edge_counter + 1'b1;
+            serial_data[15-sclk_edge_counter] <= q_f2;
 
-                    if(sclk_edge_counter == 15) begin
-                        sclk_edge_counter <= 0;
-                        if((serial_data[14:8] >= 7'b0) && (serial_data[14:8] <= 7'd4)) begin
-                            state <= `UPDATE;   // address valid
-                        end else begin
-                            state <= `TRANSACTION;
-                        end
-                    end
-                    else begin
-                        state <= `TRANSACTION;
-                    end
-                end
+            if(sclk_edge_counter == 15) begin
+                sclk_edge_counter <= 0;
             end
-            // `VALIDATION: begin
-            //     if((serial_data[14:8] >= 7'b0) && (serial_data[14:8] <= 7'd4)) begin
-            //         state <= `UPDATE;
-            //     end
-            //     else begin
-            //         state <= `IDLE;
-            //     end
-            // end
-            `UPDATE: begin
-                state <= `TRANSACTION;
-            end
-        endcase
+        end
+
     end
 end
 
-always @(*) begin
-    case(state)
-        `IDLE: begin
-            out_reg_0 = 8'b0;
-            out_reg_1 = 8'b0;
-            out_reg_2 = 8'b0;
-            out_reg_3 = 8'b0;
-            out_reg_4 = 8'b0;
-        end
-        `TRANSACTION: begin
-            out_reg_0 = 8'b0;
-            out_reg_1 = 8'b0;
-            out_reg_2 = 8'b0;
-            out_reg_3 = 8'b0;
-            out_reg_4 = 8'b0;
-        end
-        // `VALIDATION: begin
-        //     out_reg_0 = 8'b0;
-        //     out_reg_1 = 8'b0;
-        //     out_reg_2 = 8'b0;
-        //     out_reg_3 = 8'b0;
-        //     out_reg_4 = 8'b0;
-        // end
-        `UPDATE: begin
-            if(serial_data[14:8] == 7'b0) begin
-                out_reg_0 = serial_data[7:0];
-                out_reg_1 = 8'b0;
-                out_reg_2 = 8'b0;
-                out_reg_3 = 8'b0;
-                out_reg_4 = 8'b0;
-            end
-            else if(serial_data[14:8] == 7'd1) begin
-                out_reg_0 = 8'b0;
-                out_reg_1 = serial_data[7:0];
-                out_reg_2 = 8'b0;
-                out_reg_3 = 8'b0;
-                out_reg_4 = 8'b0;
-            end
-            else if(serial_data[14:8] == 7'd2) begin
-                out_reg_0 = 8'b0;
-                out_reg_1 = 8'b0;
-                out_reg_2 = serial_data[7:0];
-                out_reg_3 = 8'b0;
-                out_reg_4 = 8'b0;
-            end
-            else if(serial_data[14:8] == 7'd3) begin
-                out_reg_0 = 8'b0;
-                out_reg_1 = 8'b0;
-                out_reg_2 = 8'b0;
-                out_reg_3 = serial_data[7:0];
-                out_reg_4 = 8'b0;
-            end
-            else if(serial_data[14:8] == 7'd4) begin
-                out_reg_0 = 8'b0;
-                out_reg_1 = 8'b0;
-                out_reg_2 = 8'b0;
-                out_reg_3 = 8'b0;
-                out_reg_4 = serial_data[7:0];
-            end
-            else begin
-                out_reg_0 = 8'b0;
-                out_reg_1 = 8'b0;
-                out_reg_2 = 8'b0;
-                out_reg_3 = 8'b0;
-                out_reg_4 = 8'b0;
-            end
-        end
-    endcase
-end
+// always @(*) begin
+//     case(state)
+//         `IDLE: begin
+//             out_reg_0 = 8'b0;
+//             out_reg_1 = 8'b0;
+//             out_reg_2 = 8'b0;
+//             out_reg_3 = 8'b0;
+//             out_reg_4 = 8'b0;
+//         end
+//         `TRANSACTION: begin
+//             out_reg_0 = 8'b0;
+//             out_reg_1 = 8'b0;
+//             out_reg_2 = 8'b0;
+//             out_reg_3 = 8'b0;
+//             out_reg_4 = 8'b0;
+//         end
+//         // `VALIDATION: begin
+//         //     out_reg_0 = 8'b0;
+//         //     out_reg_1 = 8'b0;
+//         //     out_reg_2 = 8'b0;
+//         //     out_reg_3 = 8'b0;
+//         //     out_reg_4 = 8'b0;
+//         // end
+//         `UPDATE: begin
+//             if(serial_data[14:8] == 7'b0) begin
+//                 out_reg_0 = serial_data[7:0];
+//                 out_reg_1 = 8'b0;
+//                 out_reg_2 = 8'b0;
+//                 out_reg_3 = 8'b0;
+//                 out_reg_4 = 8'b0;
+//             end
+//             else if(serial_data[14:8] == 7'd1) begin
+//                 out_reg_0 = 8'b0;
+//                 out_reg_1 = serial_data[7:0];
+//                 out_reg_2 = 8'b0;
+//                 out_reg_3 = 8'b0;
+//                 out_reg_4 = 8'b0;
+//             end
+//             else if(serial_data[14:8] == 7'd2) begin
+//                 out_reg_0 = 8'b0;
+//                 out_reg_1 = 8'b0;
+//                 out_reg_2 = serial_data[7:0];
+//                 out_reg_3 = 8'b0;
+//                 out_reg_4 = 8'b0;
+//             end
+//             else if(serial_data[14:8] == 7'd3) begin
+//                 out_reg_0 = 8'b0;
+//                 out_reg_1 = 8'b0;
+//                 out_reg_2 = 8'b0;
+//                 out_reg_3 = serial_data[7:0];
+//                 out_reg_4 = 8'b0;
+//             end
+//             else if(serial_data[14:8] == 7'd4) begin
+//                 out_reg_0 = 8'b0;
+//                 out_reg_1 = 8'b0;
+//                 out_reg_2 = 8'b0;
+//                 out_reg_3 = 8'b0;
+//                 out_reg_4 = serial_data[7:0];
+//             end
+//             else begin
+//                 out_reg_0 = 8'b0;
+//                 out_reg_1 = 8'b0;
+//                 out_reg_2 = 8'b0;
+//                 out_reg_3 = 8'b0;
+//                 out_reg_4 = 8'b0;
+//             end
+//         end
+//     endcase
+// end
 
 endmodule
