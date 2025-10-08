@@ -54,68 +54,123 @@ always @(posedge sclk or negedge rst_n) begin
     if(!rst_n) begin
         sclk_edge_counter <= 4'b0;
         serial_data <= 16'b0;
+        out_reg_0 <= 8'b0;
+        out_reg_1 <= 8'b0;
+        out_reg_2 <= 8'b0;
+        out_reg_3 <= 8'b0;
+        out_reg_4 <= 8'b0;
     end else begin
         serial_data[15-sclk_edge_counter] <= q_f2;
         sclk_edge_counter <= sclk_edge_counter + 1'b1;
 
         if(sclk_edge_counter == 15) begin
             sclk_edge_counter <= 0;
+            if (cs_n) begin
+                if(serial_data[14:8] == 7'b0) begin
+                    out_reg_0 <= serial_data[7:0];
+                    out_reg_1 <= out_reg_1;
+                    out_reg_2 <= out_reg_2;
+                    out_reg_3 <= out_reg_3;
+                    out_reg_4 <= out_reg_4;
+                end
+                else if(serial_data[14:8] == 7'd1) begin
+                    out_reg_0 <= out_reg_0;
+                    out_reg_1 <= serial_data[7:0];
+                    out_reg_2 <= out_reg_2;
+                    out_reg_3 <= out_reg_3;
+                    out_reg_4 <= out_reg_4;
+                end
+                else if(serial_data[14:8] == 7'd2) begin
+                    out_reg_0 <= out_reg_0;
+                    out_reg_1 <= out_reg_1;
+                    out_reg_2 <= serial_data[7:0];
+                    out_reg_3 <= out_reg_3;
+                    out_reg_4 <= out_reg_4;
+                end
+                else if(serial_data[14:8] == 7'd3) begin
+                    out_reg_0 <= out_reg_0;
+                    out_reg_1 <= out_reg_1;
+                    out_reg_2 <= out_reg_2;
+                    out_reg_3 <= serial_data[7:0];
+                    out_reg_4 <= out_reg_4;
+                end
+                else if(serial_data[14:8] == 7'd4) begin
+                    out_reg_0 <= out_reg_0;
+                    out_reg_1 <= out_reg_1;
+                    out_reg_2 <= out_reg_2;
+                    out_reg_3 <= out_reg_3;
+                    out_reg_4 <= serial_data[7:0];
+                end
+                else begin
+                    out_reg_0 <= out_reg_0;
+                    out_reg_1 <= out_reg_1;
+                    out_reg_2 <= out_reg_2;
+                    out_reg_3 <= out_reg_3;
+                    out_reg_4 <= out_reg_4;
+                end
+            end else begin
+                out_reg_0 <= out_reg_0;
+                out_reg_1 <= out_reg_1;
+                out_reg_2 <= out_reg_2;
+                out_reg_3 <= out_reg_3;
+                out_reg_4 <= out_reg_4;
+            end
         end
 
     end
 end
 
-always @(*) begin
-    if (cs_n) begin
-        if(serial_data[14:8] == 7'b0) begin
-            out_reg_0 = serial_data[7:0];
-            out_reg_1 = out_reg_1;
-            out_reg_2 = out_reg_2;
-            out_reg_3 = out_reg_3;
-            out_reg_4 = out_reg_4;
-        end
-        else if(serial_data[14:8] == 7'd1) begin
-            out_reg_0 = out_reg_0;
-            out_reg_1 = serial_data[7:0];
-            out_reg_2 = out_reg_2;
-            out_reg_3 = out_reg_3;
-            out_reg_4 = out_reg_4;
-        end
-        else if(serial_data[14:8] == 7'd2) begin
-            out_reg_0 = out_reg_0;
-            out_reg_1 = out_reg_1;
-            out_reg_2 = serial_data[7:0];
-            out_reg_3 = out_reg_3;
-            out_reg_4 = out_reg_4;
-        end
-        else if(serial_data[14:8] == 7'd3) begin
-            out_reg_0 = out_reg_0;
-            out_reg_1 = out_reg_1;
-            out_reg_2 = out_reg_2;
-            out_reg_3 = serial_data[7:0];
-            out_reg_4 = out_reg_4;
-        end
-        else if(serial_data[14:8] == 7'd4) begin
-            out_reg_0 = out_reg_0;
-            out_reg_1 = out_reg_1;
-            out_reg_2 = out_reg_2;
-            out_reg_3 = out_reg_3;
-            out_reg_4 = serial_data[7:0];
-        end
-        else begin
-            out_reg_0 = out_reg_0;
-            out_reg_1 = out_reg_1;
-            out_reg_2 = out_reg_2;
-            out_reg_3 = out_reg_3;
-            out_reg_4 = out_reg_4;
-        end
-    end else begin
-        out_reg_0 = out_reg_0;
-        out_reg_1 = out_reg_1;
-        out_reg_2 = out_reg_2;
-        out_reg_3 = out_reg_3;
-        out_reg_4 = out_reg_4;
-    end
-end
+// always @(*) begin
+//     if (cs_n) begin
+//         if(serial_data[14:8] == 7'b0) begin
+//             out_reg_0 = serial_data[7:0];
+//             out_reg_1 = out_reg_1;
+//             out_reg_2 = out_reg_2;
+//             out_reg_3 = out_reg_3;
+//             out_reg_4 = out_reg_4;
+//         end
+//         else if(serial_data[14:8] == 7'd1) begin
+//             out_reg_0 = out_reg_0;
+//             out_reg_1 = serial_data[7:0];
+//             out_reg_2 = out_reg_2;
+//             out_reg_3 = out_reg_3;
+//             out_reg_4 = out_reg_4;
+//         end
+//         else if(serial_data[14:8] == 7'd2) begin
+//             out_reg_0 = out_reg_0;
+//             out_reg_1 = out_reg_1;
+//             out_reg_2 = serial_data[7:0];
+//             out_reg_3 = out_reg_3;
+//             out_reg_4 = out_reg_4;
+//         end
+//         else if(serial_data[14:8] == 7'd3) begin
+//             out_reg_0 = out_reg_0;
+//             out_reg_1 = out_reg_1;
+//             out_reg_2 = out_reg_2;
+//             out_reg_3 = serial_data[7:0];
+//             out_reg_4 = out_reg_4;
+//         end
+//         else if(serial_data[14:8] == 7'd4) begin
+//             out_reg_0 = out_reg_0;
+//             out_reg_1 = out_reg_1;
+//             out_reg_2 = out_reg_2;
+//             out_reg_3 = out_reg_3;
+//             out_reg_4 = serial_data[7:0];
+//         end
+//         else begin
+//             out_reg_0 = out_reg_0;
+//             out_reg_1 = out_reg_1;
+//             out_reg_2 = out_reg_2;
+//             out_reg_3 = out_reg_3;
+//             out_reg_4 = out_reg_4;
+//         end
+//     end else begin
+//         out_reg_0 = out_reg_0;
+//         out_reg_1 = out_reg_1;
+//         out_reg_2 = out_reg_2;
+//         out_reg_3 = out_reg_3;
+//         out_reg_4 = out_reg_4;
+//     end
+// end
 
 endmodule
