@@ -65,7 +65,7 @@ always @(posedge sclk or negedge rst_n) begin
 
         if(sclk_edge_counter == 15) begin
             sclk_edge_counter <= 0;
-            if (cs_n) begin
+            if (!cs_n) begin
                 if(serial_data[14:8] == 7'b0) begin
                     out_reg_0 <= serial_data[7:0];
                     out_reg_1 <= out_reg_1;
