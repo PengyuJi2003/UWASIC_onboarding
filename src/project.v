@@ -36,7 +36,6 @@ module tt_um_uwasic_onboarding_Joe_Ji (
     .clk(clk),
     .sclk(ui_in[0]),
     .copi(ui_in[1]),
-    //.cipo(uo_out),
     .reg_0(en_reg_out_7_0),
     .reg_1(en_reg_out_15_8),
     .reg_2(en_reg_pwm_7_0),

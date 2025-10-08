@@ -1,15 +1,9 @@
-// `define IDLE 2'b00
-// `define TRANSACTION 2'b01
-// `define VALIDATION 2'b10
-// `define UPDATE 2'b10
-
 module spi_peripheral (
     input  wire cs_n,           // Active-low chip select signal
     input  wire rst_n,          // Active-low reset signal
     input  wire clk,            // faster clock from the top level
     input  wire sclk,           // Clock signal from the controller
     input  wire copi,           // Controller out peripheral in (for write)
-    //output wire [7:0] cipo,     // Controller in peripheral out (for read)
     output wire [7:0] reg_0,    // register with address 0x00
     output wire [7:0] reg_1,    // register with address 0x01
     output wire [7:0] reg_2,    // register with address 0x02
@@ -17,26 +11,24 @@ module spi_peripheral (
     output wire [7:0] reg_4     // register with address 0x04
 );
 
-//output regs & assignments
-//reg [7:0] read_output;
+// output regs & assignments
 reg [7:0] out_reg_0;
 reg [7:0] out_reg_1;
 reg [7:0] out_reg_2;
 reg [7:0] out_reg_3;
 reg [7:0] out_reg_4;
 
-//assign cipo = read_output;
 assign reg_0 = out_reg_0;
 assign reg_1 = out_reg_1;
 assign reg_2 = out_reg_2;
 assign reg_3 = out_reg_3;
 assign reg_4 = out_reg_4;
 
-//temp registers
+// temp registers
 reg [3:0] sclk_edge_counter;
 reg [15:0] serial_data;
 
-//Two-FFs synchronizer
+// Two-FFs synchronizer to prevent metastability
 reg q_f1;
 reg q_f2;
 
@@ -52,6 +44,7 @@ end
 
 always @(posedge sclk or negedge rst_n) begin
     if(!rst_n) begin
+        // Reset
         sclk_edge_counter <= 4'b0;
         serial_data <= 16'b0;
         out_reg_0 <= 8'b0;
@@ -60,12 +53,20 @@ always @(posedge sclk or negedge rst_n) begin
         out_reg_3 <= 8'b0;
         out_reg_4 <= 8'b0;
     end else begin
+        // Copy the controller input 1 bit per cycle
+        // and increment the counter by 1
         serial_data[15-sclk_edge_counter] <= q_f2;
         sclk_edge_counter <= sclk_edge_counter + 1'b1;
 
         if(sclk_edge_counter == 15) begin
+            // All 16 bits are received and stored, clear the counter
             sclk_edge_counter <= 0;
+
+            // If chip select is low, update the output regs
+            // Otherwise do nothing and preserve old values
             if (!cs_n) begin
+                // If write address is 0x00, only update reg_0
+                // and preserve values in other regs
                 if(serial_data[14:8] == 7'b0) begin
                     out_reg_0 <= serial_data[7:0];
                     out_reg_1 <= out_reg_1;
@@ -102,6 +103,8 @@ always @(posedge sclk or negedge rst_n) begin
                     out_reg_4 <= serial_data[7:0];
                 end
                 else begin
+                    // If the address is invalid (outside 0x00-0x04), 
+                    // do nothing and preserve old values
                     out_reg_0 <= out_reg_0;
                     out_reg_1 <= out_reg_1;
                     out_reg_2 <= out_reg_2;
@@ -119,58 +122,5 @@ always @(posedge sclk or negedge rst_n) begin
 
     end
 end
-
-// always @(*) begin
-//     if (cs_n) begin
-//         if(serial_data[14:8] == 7'b0) begin
-//             out_reg_0 = serial_data[7:0];
-//             out_reg_1 = out_reg_1;
-//             out_reg_2 = out_reg_2;
-//             out_reg_3 = out_reg_3;
-//             out_reg_4 = out_reg_4;
-//         end
-//         else if(serial_data[14:8] == 7'd1) begin
-//             out_reg_0 = out_reg_0;
-//             out_reg_1 = serial_data[7:0];
-//             out_reg_2 = out_reg_2;
-//             out_reg_3 = out_reg_3;
-//             out_reg_4 = out_reg_4;
-//         end
-//         else if(serial_data[14:8] == 7'd2) begin
-//             out_reg_0 = out_reg_0;
-//             out_reg_1 = out_reg_1;
-//             out_reg_2 = serial_data[7:0];
-//             out_reg_3 = out_reg_3;
-//             out_reg_4 = out_reg_4;
-//         end
-//         else if(serial_data[14:8] == 7'd3) begin
-//             out_reg_0 = out_reg_0;
-//             out_reg_1 = out_reg_1;
-//             out_reg_2 = out_reg_2;
-//             out_reg_3 = serial_data[7:0];
-//             out_reg_4 = out_reg_4;
-//         end
-//         else if(serial_data[14:8] == 7'd4) begin
-//             out_reg_0 = out_reg_0;
-//             out_reg_1 = out_reg_1;
-//             out_reg_2 = out_reg_2;
-//             out_reg_3 = out_reg_3;
-//             out_reg_4 = serial_data[7:0];
-//         end
-//         else begin
-//             out_reg_0 = out_reg_0;
-//             out_reg_1 = out_reg_1;
-//             out_reg_2 = out_reg_2;
-//             out_reg_3 = out_reg_3;
-//             out_reg_4 = out_reg_4;
-//         end
-//     end else begin
-//         out_reg_0 = out_reg_0;
-//         out_reg_1 = out_reg_1;
-//         out_reg_2 = out_reg_2;
-//         out_reg_3 = out_reg_3;
-//         out_reg_4 = out_reg_4;
-//     end
-// end
 
 endmodule
