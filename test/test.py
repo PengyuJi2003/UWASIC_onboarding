@@ -183,7 +183,7 @@ async def test_pwm_duty(dut):
     # Set en_reg_out_7_0 to 0x00 (8'b1) (i.e. en_reg_out_7_0[0] = 1)
     dut._log.info("Write transaction, address 0x00, data 0x01")
     ui_in_val = await send_spi_transaction(dut, 1, 0x00, 0x01)
-    await ClockCycles(dut.clk, 100)
+    await ClockCycles(dut.clk, 1000)
 
     # Set en_reg_out_15_8 to 0x01 (8'b1) (i.e. en_reg_out_15_8[0] = 1)
     dut._log.info("Write transaction, address 0x00, data 0x01")
