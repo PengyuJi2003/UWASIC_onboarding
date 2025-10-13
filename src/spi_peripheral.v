@@ -61,7 +61,7 @@ always @(posedge sclk or negedge rst_n) begin
     end
 end
 
-always @(*) begin
+always_latch begin
     if (!rst_n) begin
         out_reg_0 = 0;
         out_reg_1 = 0;
