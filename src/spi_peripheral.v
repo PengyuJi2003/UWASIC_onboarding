@@ -47,11 +47,6 @@ always @(posedge sclk or negedge rst_n) begin
         // Reset
         sclk_edge_counter <= 4'b0;
         serial_data <= 16'b0;
-        out_reg_0 <= 0;
-        out_reg_1 <= 0;
-        out_reg_2 <= 0;
-        out_reg_3 <= 0;
-        out_reg_4 <= 0;
     end else begin
         // Copy the controller input 1 bit per cycle
         // and increment the counter by 1
@@ -67,25 +62,34 @@ always @(posedge sclk or negedge rst_n) begin
 end
 
 always @(*) begin
+    if (!rst_n) begin
+        out_reg_0 = 0;
+        out_reg_1 = 0;
+        out_reg_2 = 0;
+        out_reg_3 = 0;
+        out_reg_4 = 0;
+    end
     // If chip select is high, update the output regs
     // Otherwise do nothing and preserve old values
-    if (cs_n && rst_n) begin
-        // If write address is 0x00, only update reg_0
-        // and preserve values in other regs
-        if(serial_data[14:8] == 7'b0) begin
-            out_reg_0 = serial_data[7:0];
-        end
-        else if(serial_data[14:8] == 7'd1) begin
-            out_reg_1 = serial_data[7:0];
-        end
-        else if(serial_data[14:8] == 7'd2) begin
-            out_reg_2 = serial_data[7:0];
-        end
-        else if(serial_data[14:8] == 7'd3) begin
-            out_reg_3 = serial_data[7:0];
-        end
-        else if(serial_data[14:8] == 7'd4) begin
-            out_reg_4 = serial_data[7:0];
+    else begin
+        if (cs_n) begin
+            // If write address is 0x00, only update reg_0
+            // and preserve values in other regs
+            if(serial_data[14:8] == 7'b0) begin
+                out_reg_0 = serial_data[7:0];
+            end
+            else if(serial_data[14:8] == 7'd1) begin
+                out_reg_1 = serial_data[7:0];
+            end
+            else if(serial_data[14:8] == 7'd2) begin
+                out_reg_2 = serial_data[7:0];
+            end
+            else if(serial_data[14:8] == 7'd3) begin
+                out_reg_3 = serial_data[7:0];
+            end
+            else if(serial_data[14:8] == 7'd4) begin
+                out_reg_4 = serial_data[7:0];
+            end
         end
     end
 end
