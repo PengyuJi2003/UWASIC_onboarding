@@ -102,7 +102,7 @@ async def measure_pwm_frequency(bus) -> float:
     freq_hz = 1e9 / period_ns
     return freq_hz
 
-async def measure_pwm_duty_cycle(bus, bit, period) -> float:
+async def measure_pwm_duty_cycle(bus, bit) -> float:
     init = int(bus[bit])
     if init == 0:
         await Edge(bus) #rising edge
@@ -305,19 +305,14 @@ async def test_pwm_duty(dut):
 
     # Edge case: duty cycle 0% and 100%
     # Set the duty cycle to be 0%
-    dut._log.info(f"Set the duty cycle to 0% (0x00)")
+    dut._log.info(f"Edge case 1: Set the duty cycle to 0% (0x00)")
     ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x00)
     assert (dut.uo_out.value == 0xFE), f"Expected 0xFE, got {dut.uo_out.value}"
 
-    # Set the duty cycle to be 50%
-    dut._log.info(f"Set the duty cycle to 50% (0x80)")
-    ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x80)
-
-    freq1 = await measure_pwm_frequency(dut.uo_out)
-    await ClockCycles(dut.clk, 10000)
-
-    assert (freq1 >= 2970 and freq1 <= 3030), f"Expected ~3000 Hz, got {freq1:.2f} Hz"
-    await ClockCycles(dut.clk, 10000)
+    # Set the duty cycle to be 100%
+    dut._log.info(f"Edge case 2: Set the duty cycle to 100% (0xFF)")
+    ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0xFF)
+    assert (dut.uo_out.value == 0xFF), f"Expected 0xFF, got {dut.uo_out.value}"
 
     # Perform duty cycle sweep and check duty cycle
     # Sweep from 1 to 256 with a step size of 8 (8, 16, 24, ... , 248)
@@ -327,7 +322,7 @@ async def test_pwm_duty(dut):
         ui_in_val = await send_spi_transaction(dut, 1, 0x04, i)
 
 
-        duty_cycle = await measure_pwm_duty_cycle(dut.uo_out, 0, freq1)
+        duty_cycle = await measure_pwm_duty_cycle(dut.uo_out, 0)
         await ClockCycles(dut.clk, 10000)
 
         assert (duty_cycle >= 2475*i/64 and duty_cycle <= 2525*i/64), f"Expected ~{2500*i/64}, got {duty_cycle:.2f}"
