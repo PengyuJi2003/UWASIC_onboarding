@@ -3,7 +3,7 @@
 
 import cocotb
 from cocotb.clock import Clock
-from cocotb.triggers import RisingEdge, FallingEdge
+from cocotb.triggers import RisingEdge, FallingEdge, Edge
 from cocotb.triggers import ClockCycles
 from cocotb.types import Logic
 from cocotb.types import LogicArray
@@ -85,17 +85,28 @@ async def send_spi_transaction(dut, r_w, address, data):
     await ClockCycles(dut.clk, 600)
     return ui_in_logicarray(ncs, bit, sclk)
 
-async def measure_pwm_frequency(signal):
+async def measure_pwm_frequency(bus, bit):
     '''
-    Measure the frequency of a signal
+    Measure the frequency (in Hz) of bus[bit]
     '''
-    # wait for the first rising edge
-    await RisingEdge(signal)
-    t1 = get_sim_time(units='ns')   # record first rising edge time in ns
+    # Find the first rising edge of the chosen bit
+    prev = int(bus.value[bit])
+    while True:
+        await Edge(bus)                 # callback on the vector is supported
+        curr = int(bus.value[bit])
+        if prev == 0 and curr == 1:     # first rising edge
+            t1 = get_sim_time(units='ns')
+            break
+        prev = curr
 
-    # wait for the next rising edge
-    await RisingEdge(signal)
-    t2 = get_sim_time(units='ns')   # record second rising edge time in ns
+    # Find the next rising edge of that bit
+    while True:
+        await Edge(bus)
+        next = int(bus.value[bit])
+        if curr == 0 and nxt == 1:      # second rising edge
+            t2 = get_sim_time(units='ns')
+            break
+        curr = next
 
     period_ns = t2 - t1
     freq_hz = 1e9 / period_ns
@@ -214,11 +225,11 @@ async def test_pwm_freq(dut):
     ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x80)
     await ClockCycles(dut.clk, 1000)
 
-    freq1 = await measure_pwm_frequency(dut.uo_out)
+    freq1 = await measure_pwm_frequency(dut.uo_out, 0)
     assert (freq1 >= 2970 & freq1 <= 3030), f"Expected 3000Hz, got {freq1}"
     await ClockCycles(dut.clk, 1000)
 
-    freq2 = await measure_pwm_frequency(dut.uio_out)
+    freq2 = await measure_pwm_frequency(dut.uio_out, 0)
     assert (freq2 >= 2970 & freq2 <= 3030), f"Expected 3000Hz, got {freq2}"
     await ClockCycles(dut.clk, 1000)
 
