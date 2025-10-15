@@ -86,7 +86,9 @@ async def send_spi_transaction(dut, r_w, address, data):
     return ui_in_logicarray(ncs, bit, sclk)
 
 async def measure_pwm_frequency(signal):
-    
+    '''
+    Measure the frequency of a signal
+    '''
     # wait for the first rising edge
     await RisingEdge(signal)
     t1 = get_sim_time(units='ns')   # record first rising edge time in ns
@@ -212,11 +214,11 @@ async def test_pwm_freq(dut):
     ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x80)
     await ClockCycles(dut.clk, 1000)
 
-    freq1 = await measure_pwm_frequency(dut.uo_out[0])
+    freq1 = await measure_pwm_frequency(dut.uo_out)
     assert (freq1 >= 2970 & freq1 <= 3030), f"Expected 3000Hz, got {freq1}"
     await ClockCycles(dut.clk, 1000)
 
-    freq2 = await measure_pwm_frequency(dut.uio_out[0])
+    freq2 = await measure_pwm_frequency(dut.uio_out)
     assert (freq2 >= 2970 & freq2 <= 3030), f"Expected 3000Hz, got {freq2}"
     await ClockCycles(dut.clk, 1000)
 
