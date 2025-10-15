@@ -85,32 +85,19 @@ async def send_spi_transaction(dut, r_w, address, data):
     await ClockCycles(dut.clk, 600)
     return ui_in_logicarray(ncs, bit, sclk)
 
-# async def measure_pwm_frequency(bus, bit):
-#     '''
-#     Measure the frequency (in Hz) of bus[bit]
-#     '''
-#     # Find the first rising edge of the chosen bit
-#     prev = int(bus.value[bit])
-#     while True:
-#         await Edge(bus)                 # callback on the vector is supported
-#         curr = int(bus.value[bit])
-#         if prev == 0 and curr == 1:     # first rising edge
-#             t1 = get_sim_time(units='ns')
-#             break
-#         prev = curr
+async def measure_pwm_frequency(bus, bit) -> float:
+    '''
+    Measure the frequency (in Hz) of bus[bit]
+    '''
+    await RisingEdge(bus[bit])
+    t1 = get_sim_time(units='ns')
 
-#     # Find the next rising edge of that bit
-#     while True:
-#         await Edge(bus)
-#         next = int(bus.value[bit])
-#         if curr == 0 and next == 1:      # second rising edge
-#             t2 = get_sim_time(units='ns')
-#             break
-#         curr = next
+    await RisingEdge(bus[bit])
+    t2 = get_sim_time(units='ns')
 
-#     period_ns = t2 - t1
-#     freq_hz = 1e9 / period_ns
-#     return freq_hz
+    period_ns = t2 - t1
+    freq_hz = 1e9 / period_ns
+    return freq_hz
 
 @cocotb.test()
 async def test_spi(dut):
@@ -225,9 +212,9 @@ async def test_pwm_freq(dut):
     ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x80)
     await ClockCycles(dut.clk, 10000)
 
-    # freq1 = await measure_pwm_frequency(dut.uo_out, 0)
-    # assert (freq1 >= 2970 and freq1 <= 3030), f"Expected 3000 Hz, got {freq1} Hz"
-    # await ClockCycles(dut.clk, 1000)
+    freq1 = await measure_pwm_frequency(dut.uo_out, 0)
+    assert (freq1 >= 2970 and freq1 <= 3030), f"Expected 3000 Hz, got {freq1} Hz"
+    await ClockCycles(dut.clk, 20000)
 
     # freq2 = await measure_pwm_frequency(dut.uio_out, 0)
     # assert (freq2 >= 2970 and freq2 <= 3030), f"Expected 3000Hz, got {freq2}"
