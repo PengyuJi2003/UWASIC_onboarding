@@ -321,10 +321,9 @@ async def test_pwm_duty(dut):
         dut._log.info(f"Set the duty cycle to {25*i/64}% ({hex(i)})")
         ui_in_val = await send_spi_transaction(dut, 1, 0x04, i)
 
-
         duty_cycle = await measure_pwm_duty_cycle(dut.uo_out, 0)
         await ClockCycles(dut.clk, 10000)
 
-        assert (duty_cycle >= 24.75*i/64 and duty_cycle <= 25.25*i/64), f"Expected ~{2.5*i/64}%, got {duty_cycle:.3f}%"
+        assert (duty_cycle >= 24.75*i/64 and duty_cycle <= 25.25*i/64), f"Expected ~{25*i/64}%, got {duty_cycle:.3f}%"
 
     dut._log.info("PWM Duty Cycle test completed successfully")
