@@ -102,16 +102,6 @@ async def measure_pwm_frequency(bus) -> float:
     freq_hz = 1e9 / period_ns
     return freq_hz
 
-# async def wait_rising_bit(bus, bit):
-#     """Wait for a 0→1 transition of bus[bit] by watching the whole bus."""
-#     prev = int(bus.value[bit])
-#     while True:
-#         await Edge(bus)              # callback OK on vectors
-#         curr = int(bus.value[bit])
-#         if prev == 0 and curr == 1:
-#             return
-#         prev = curr
-
 @cocotb.test()
 async def test_spi(dut):
     dut._log.info("Start SPI test")
@@ -203,43 +193,47 @@ async def test_pwm_freq(dut):
     # Set en_reg_out_7_0 to 0x01 (8'b1) (i.e. en_reg_out_7_0[0] = 1)
     dut._log.info("Write transaction, address 0x00, data 0xFF")
     ui_in_val = await send_spi_transaction(dut, 1, 0x00, 0xFF)
-    #await ClockCycles(dut.clk, 100)
 
     # Set en_reg_out_15_8 to 0x01 (8'b1) (i.e. en_reg_out_15_8[0] = 1)
     dut._log.info("Write transaction, address 0x01, data 0x00")
     ui_in_val = await send_spi_transaction(dut, 1, 0x01, 0x00)
-    #await ClockCycles(dut.clk, 100)
 
     # Set en_reg_pwm_7_0 to 0x01 (8'b1) (i.e., en_reg_pwm_7_0[0] = 1)
     dut._log.info("Write transaction, address 0x02, data 0x01")
     ui_in_val = await send_spi_transaction(dut, 1, 0x02, 0x01)
-    #await ClockCycles(dut.clk, 100)
 
     # Set en_reg_pwm_15_8 to 0x01 (8'b1) (i.e., en_reg_pwm_15_8[0] = 1)
     dut._log.info("Write transaction, address 0x03, data 0x00")
     ui_in_val = await send_spi_transaction(dut, 1, 0x03, 0x00)
-    #await ClockCycles(dut.clk, 100)
-
-    # # Set the duty cycle to be 50%
-    # dut._log.info(f"Set the duty cycle to (50%) 0x80")
-    # ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x80)
-    # await ClockCycles(dut.clk, 30000)
 
     # Set the duty cycle to be 25%
-    dut._log.info(f"Set the duty cycle to (25%) 0x40")
+    dut._log.info(f"Set the duty cycle to 25% (0x40)")
     ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x40)
 
     freq1 = await measure_pwm_frequency(dut.uo_out)
-    await ClockCycles(dut.clk, 30000)
+    await ClockCycles(dut.clk, 10000)
 
     assert (freq1 >= 2970 and freq1 <= 3030), f"Expected 3000 Hz, got {freq1:.2f} Hz"
-    await ClockCycles(dut.clk, 20000)
 
-    
+    # Set the duty cycle to be 50%
+    dut._log.info(f"Set the duty cycle to 50% (0x80)")
+    ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x80)
 
-    # freq2 = await measure_pwm_frequency(dut.uio_out, 0)
-    # assert (freq2 >= 2970 and freq2 <= 3030), f"Expected 3000Hz, got {freq2}"
-    # await ClockCycles(dut.clk, 1000)
+    freq1 = await measure_pwm_frequency(dut.uo_out)
+    await ClockCycles(dut.clk, 10000)
+
+    assert (freq1 >= 2970 and freq1 <= 3030), f"Expected 3000 Hz, got {freq1:.2f} Hz"
+    await ClockCycles(dut.clk, 10000)
+
+    # Set the duty cycle to be 75%
+    dut._log.info(f"Set the duty cycle to (75%) 0xC0")
+    ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0xC0)
+
+    freq1 = await measure_pwm_frequency(dut.uo_out)
+    await ClockCycles(dut.clk, 10000)
+
+    assert (freq1 >= 2970 and freq1 <= 3030), f"Expected 3000 Hz, got {freq1:.2f} Hz"
+    await ClockCycles(dut.clk, 10000)
 
     dut._log.info("PWM Frequency test completed successfully")
 
