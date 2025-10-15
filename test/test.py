@@ -213,10 +213,10 @@ async def test_pwm_freq(dut):
     await ClockCycles(dut.clk, 10000)
 
     # freq1 = await measure_pwm_frequency(dut.uo_out, 0)
-    await RisingEdge([dut.uo_out[0]])
+    await RisingEdge(dut.uo_out[0])
     t1 = get_sim_time(units='ns')
 
-    await RisingEdge([dut.uo_out[0]])
+    await RisingEdge(dut.uo_out[0])
     t2 = get_sim_time(units='ns')
 
     period_ns = t2 - t1
