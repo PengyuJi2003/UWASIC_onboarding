@@ -3,7 +3,7 @@
 
 import cocotb
 from cocotb.clock import Clock
-from cocotb.triggers import RisingEdge, FallingEdge, ValueChange
+from cocotb.triggers import RisingEdge, FallingEdge, Edge
 from cocotb.triggers import ClockCycles
 from cocotb.types import Logic
 from cocotb.types import LogicArray
@@ -89,13 +89,13 @@ async def measure_pwm_frequency(bus) -> float:
     '''
     Measure the frequency (in Hz) of bus[bit]
     '''
-    await ValueChange(bus)
+    await Edge(bus)
     t1 = get_sim_time(units='ns')
 
-    await ValueChange(bus)
+    await Edge(bus)
     # t2 = get_sim_time(units='ns')
 
-    await ValueChange(bus)
+    await Edge(bus)
     t3 = get_sim_time(units='ns')
 
     period_ns = t3 - t1
@@ -228,16 +228,6 @@ async def test_pwm_freq(dut):
     # Set the duty cycle to be 25%
     dut._log.info(f"Set the duty cycle to (25%) 0x40")
     ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x40)
-
-    # # freq1 = await measure_pwm_frequency(dut.uo_out, 0)
-    # await wait_rising_bit(dut.uo_out, 0)
-    # t1 = get_sim_time(units='ns')
-
-    # await wait_rising_bit(dut.uo_out, 0)
-    # t2 = get_sim_time(units='ns')
-
-    # period_ns = t2 - t1
-    # freq1 = 1e9 / period_ns
 
     freq1 = measure_pwm_frequency(dut.uo_out)
     await ClockCycles(dut.clk, 30000)
