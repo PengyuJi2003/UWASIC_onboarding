@@ -99,6 +99,16 @@ async def send_spi_transaction(dut, r_w, address, data):
 #     freq_hz = 1e9 / period_ns
 #     return freq_hz
 
+async def wait_rising_bit(bus, bit):
+    """Wait for a 0→1 transition of bus[bit] by watching the whole bus."""
+    prev = int(bus.value[bit])
+    while True:
+        await Edge(bus)              # callback OK on vectors
+        curr = int(bus.value[bit])
+        if prev == 0 and curr == 1:
+            return
+        prev = curr
+
 @cocotb.test()
 async def test_spi(dut):
     dut._log.info("Start SPI test")
@@ -213,10 +223,10 @@ async def test_pwm_freq(dut):
     await ClockCycles(dut.clk, 10000)
 
     # freq1 = await measure_pwm_frequency(dut.uo_out, 0)
-    await RisingEdge(dut.uo_out[0])
+    await wait_rising_bit(dut.uo_out, 0)
     t1 = get_sim_time(units='ns')
 
-    await RisingEdge(dut.uo_out[0])
+    await wait_rising_bit(dut.uo_out, 0)
     t2 = get_sim_time(units='ns')
 
     period_ns = t2 - t1
