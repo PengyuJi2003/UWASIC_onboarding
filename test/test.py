@@ -229,10 +229,10 @@ async def test_pwm_freq(dut):
     dut._log.info(f"Set the duty cycle to (25%) 0x40")
     ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x40)
 
-    freq1 = measure_pwm_frequency(dut.uo_out)
+    freq1 = await measure_pwm_frequency(dut.uo_out)
     await ClockCycles(dut.clk, 30000)
 
-    assert (freq1 >= 2970 and freq1 <= 3030), f"Expected 3000 Hz, got {freq1} Hz"
+    assert (freq1 >= 2970 and freq1 <= 3030), f"Expected 3000 Hz, got {freq1:.2f} Hz"
     await ClockCycles(dut.clk, 20000)
 
     
