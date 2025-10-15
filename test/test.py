@@ -207,9 +207,14 @@ async def test_pwm_freq(dut):
     ui_in_val = await send_spi_transaction(dut, 1, 0x03, 0x00)
     #await ClockCycles(dut.clk, 100)
 
-    # Set the duty cycle to be 50%
-    dut._log.info(f"Set the duty cycle to (50%) 0x80")
-    ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x80)
+    # # Set the duty cycle to be 50%
+    # dut._log.info(f"Set the duty cycle to (50%) 0x80")
+    # ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x80)
+    # await ClockCycles(dut.clk, 30000)
+
+    # Set the duty cycle to be 25%
+    dut._log.info(f"Set the duty cycle to (25%) 0x40")
+    ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x40)
     await ClockCycles(dut.clk, 30000)
 
     # # freq1 = await measure_pwm_frequency(dut.uo_out, 0)
