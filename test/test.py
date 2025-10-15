@@ -325,6 +325,6 @@ async def test_pwm_duty(dut):
         duty_cycle = await measure_pwm_duty_cycle(dut.uo_out, 0)
         await ClockCycles(dut.clk, 10000)
 
-        assert (duty_cycle >= 2.475*i/64 and duty_cycle <= 2.525*i/64), f"Expected ~{2.5*i/64}, got {duty_cycle:.3f}"
+        assert (duty_cycle >= 24.75*i/64 and duty_cycle <= 25.25*i/64), f"Expected ~{2.5*i/64}%, got {duty_cycle:.3f}%"
 
     dut._log.info("PWM Duty Cycle test completed successfully")
