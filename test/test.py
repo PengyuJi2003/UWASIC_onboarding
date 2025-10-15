@@ -103,7 +103,7 @@ async def measure_pwm_frequency(bus, bit):
     while True:
         await Edge(bus)
         next = int(bus.value[bit])
-        if curr == 0 and nxt == 1:      # second rising edge
+        if curr == 0 and next == 1:      # second rising edge
             t2 = get_sim_time(units='ns')
             break
         curr = next
