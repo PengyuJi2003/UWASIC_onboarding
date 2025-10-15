@@ -110,6 +110,9 @@ async def measure_pwm_duty_cycle(bus, bit, period) -> float:
 
         await Edge(bus) #falling edge
         t2 = get_sim_time(units='ns')
+
+        await Edge(bus) #2nd rising edge
+        t3 = get_sim_time(unit='ns')
     else:               #init = 1
         await Edge(bus) #back to zero
 
@@ -118,9 +121,13 @@ async def measure_pwm_duty_cycle(bus, bit, period) -> float:
 
         await Edge(bus) #falling edge
         t2 = get_sim_time(units='ns')
+
+        await Edge(bus) #2nd rising edge
+        t3 = get_sim_time(unit='ns')
     high_time = t2 - t1
+    period = t3 - t1
     duty_cycle = high_time / period * 100
-    return duty_cycle     
+    return duty_cycle
 
 # @cocotb.test()
 # async def test_spi(dut):
