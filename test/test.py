@@ -99,6 +99,16 @@ async def send_spi_transaction(dut, r_w, address, data):
 #     freq_hz = 1e9 / period_ns
 #     return freq_hz
 
+async def wait_rising_bit(bus, bit):
+    """Wait for a 0→1 transition of bus[bit] by watching the whole bus."""
+    prev = int(bus.value[bit])
+    while True:
+        await Edge(bus)              # callback OK on vectors
+        curr = int(bus.value[bit])
+        if prev == 0 and curr == 1:
+            return
+        prev = curr
+
 @cocotb.test()
 async def test_spi(dut):
     dut._log.info("Start SPI test")
@@ -215,20 +225,22 @@ async def test_pwm_freq(dut):
     # Set the duty cycle to be 25%
     dut._log.info(f"Set the duty cycle to (25%) 0x40")
     ui_in_val = await send_spi_transaction(dut, 1, 0x04, 0x40)
+    await ClockCycles(dut.clk, 1000)
+
+    # freq1 = await measure_pwm_frequency(dut.uo_out, 0)
+    await wait_rising_bit(dut.uo_out, 0)
+    t1 = get_sim_time(units='ns')
+
+    await wait_rising_bit(dut.uo_out, 0)
+    t2 = get_sim_time(units='ns')
+
+    period_ns = t2 - t1
+    freq1 = 1e9 / period_ns
+
     await ClockCycles(dut.clk, 30000)
 
-    # # freq1 = await measure_pwm_frequency(dut.uo_out, 0)
-    # await wait_rising_bit(dut.uo_out, 0)
-    # t1 = get_sim_time(units='ns')
-
-    # await wait_rising_bit(dut.uo_out, 0)
-    # t2 = get_sim_time(units='ns')
-
-    # period_ns = t2 - t1
-    # freq1 = 1e9 / period_ns
-
-    # assert (freq1 >= 2970 and freq1 <= 3030), f"Expected 3000 Hz, got {freq1} Hz"
-    # await ClockCycles(dut.clk, 20000)
+    assert (freq1 >= 2970 and freq1 <= 3030), f"Expected 3000 Hz, got {freq1} Hz"
+    await ClockCycles(dut.clk, 20000)
 
     
 
